@@ -12,6 +12,7 @@ export class UserService {
         });
 
         let userId = null;
+        console.log('isUserExist', userExistedByEmail);
         if (userExistedByEmail) {
             userId = userExistedByEmail.id;
             await userExistedByEmail.update({ lastLoggedInDate: new Date() });
@@ -22,15 +23,14 @@ export class UserService {
                 email: user.email,
             });
             userId = newUser.id;
-
-            if (adapterId) {
-                await UserAdapter.create({
-                    userId,
-                    adapterId,
-                });
-            }
-
             console.log('Create is completed');
+        }
+
+        if (adapterId) {
+            await UserAdapter.upsert({
+                userId,
+                adapterId,
+            });
         }
 
         await UserNetwork.upsert({

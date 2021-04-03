@@ -17,9 +17,9 @@ export class OauthGithubProvider extends OauthBaseProvider {
         return `${this.apiUrl}/user/emails?&access_token=${token}`;
     }
 
-    async processUserData(userData: string, token: string): Promise<BaseUserDetails> {
+    async processUserData(userData: string, tokenData: any): Promise<BaseUserDetails> {
         const emailsResponse = await requestPromise.get(
-            this.getApiEmailRequestUrl(token),
+            this.getApiEmailRequestUrl(tokenData.access_token),
             this.requestOptions,
         );
         const emails = JSON.parse(emailsResponse);

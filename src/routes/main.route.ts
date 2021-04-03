@@ -4,16 +4,18 @@ import {
     Response,
 } from 'express';
 import serveStatic from 'serve-static';
+import config from '../config/config';
 
 export function initializeMainRouter() {
     const router = Router();
+    const { pathname } = config;
 
     router.get('/',  (req: Request, res: Response) => {
-        res.render('plain/.home');
+        res.render('plain/.home', { pathname });
     });
 
     router.get('/policy',  (req: Request, res: Response) => {
-        res.render('plain/.policy');
+        res.render('plain/.policy', { pathname });
     });
 
 

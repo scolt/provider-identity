@@ -1,5 +1,6 @@
 import { OauthFacebookProvider } from '../providers/oauth.facebook.provider';
 import { OauthGithubProvider } from '../providers/oauth.github.provider';
+import { OauthVkProvider } from '../providers/oauth.vk.provider';
 
 export default {
     port: process.env.port || 3000,
@@ -21,6 +22,13 @@ export default {
         credentials: {
             clientId: '7a33fc23ab100c0137f1',
             secret: '2dede644804288a4aee3d7c1ee5b85fbc37698ba',
+        },
+    }, {
+        key: OauthVkProvider.key,
+        provider: OauthVkProvider,
+        credentials: {
+            clientId: '7812199',
+            secret: 'ltOvR8YT8fZaJels2pGy',
         },
     }],
 };

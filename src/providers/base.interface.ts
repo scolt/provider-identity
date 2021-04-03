@@ -15,3 +15,8 @@ export interface AuthProviderConfig {
     key: string;
     credentials: AuthProviderAPICreds;
 }
+
+export interface TokenData {
+    access_token: string;
+    [key: string]: any;
+}

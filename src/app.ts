@@ -51,7 +51,7 @@ async function establishDatabase() {
 async function startApplication() {
     const app = express();
 
-    // await establishDatabase();
+    await establishDatabase();
     estabilishMiddlewares(app);
     establishViewEngine(app);
     establishRoutes(app);

@@ -6,6 +6,7 @@ import { User } from './user.model';
     tableName: 'users_adapters',
 })
 export class UserAdapter extends Model {
+    @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataType.UUID)
     userId: string;

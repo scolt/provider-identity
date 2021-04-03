@@ -1,6 +1,7 @@
 import {
     AuthProviderConfig,
     BaseUserDetails,
+    TokenData,
 } from './base.interface';
 
 import requestPromise, { RequestPromiseOptions } from 'request-promise';
@@ -26,7 +27,7 @@ export abstract class OauthBaseProvider {
     }
 
     abstract getApiRequestUrl(token: string): string;
-    abstract processUserData(userData: string, token?: string): Promise<BaseUserDetails>;
+    abstract processUserData(userData: string, tokenData?: TokenData): Promise<BaseUserDetails>;
 
     getOriginalUrl() {
         const query = generateQueryParamsByObj({
@@ -68,7 +69,7 @@ export abstract class OauthBaseProvider {
                 this.getApiRequestUrl(parsedResponseAuth.access_token),
                 this.requestOptions,
             );
-            return this.processUserData(userDetails, parsedResponseAuth.access_token);
+            return this.processUserData(userDetails, parsedResponseAuth);
         }
     }
 }
