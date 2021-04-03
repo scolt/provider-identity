@@ -1,5 +1,4 @@
-import { Sequelize } from 'sequelize';
-import { ModelConfig } from './model-config.interface';
+import { Sequelize, ModelCtor } from 'sequelize-typescript';
 import logger from '../utils/logger';
 
 export interface DatabaseConnectConfig {
@@ -15,18 +14,17 @@ export class Database {
         this.db = new Sequelize(this.config.connectionUrl);
     }
 
-    async initModels(models: ModelConfig[] = []): Promise<void> {
+    async initModels(models: ModelCtor[] = []): Promise<void> {
         if (!this.db) {
             throw new Error('Connect to a database must be established');
         }
+        this.db.addModels(models);
 
-        for (const config of models) {
-            logger.info(`Try to initialize ${config.tableName}`);
-            config.model.init(config.attributes, {
-                tableName: config.tableName,
-                sequelize: this.db,
+        for (const model of models) {
+            logger.info(`Try to initialize ${model.tableName}`);
+            await model.sync({
+                alter: true,
             });
-            await config.model.sync();
         }
     }
 }

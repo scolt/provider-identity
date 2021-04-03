@@ -3,23 +3,25 @@ import {
     Request,
     Response,
 } from 'express';
-import vars from '../config/vars';
+import config from '../config/config';
 import serveStatic from 'serve-static';
 
 export function initializeViewsRouter() {
     const router = Router();
 
     router.get('/:adapter/login',  (req: Request, res: Response) => {
-        const adapterId: string = req.params['adapter'] || '';
-        const redirectUrl: string = req.query['redirect_url'] || 'hello';
-        const isAvailableClient = vars.supportedClients.indexOf(adapterId.toLowerCase()) > -1;
+        const adapterId = <string>req.params['adapter'] || '';
+        const redirectUrl= <string>req.query['redirect_uri'] || 'https://webtech.by';
+        const { pathname } = config;
+        const isAvailableClient = config.supportedClients.indexOf(adapterId.toLowerCase()) > -1;
         if (isAvailableClient) {
             res.render(`${adapterId}/.login`, {
+                pathname,
                 adapterId,
                 redirectUrl,
             });
         } else {
-            res.send('This client is not supported by current platform, please contact with your administrator.');
+            res.render('plain/.errorNotSupportedClient', { test: true });
         }
     });
 

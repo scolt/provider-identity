@@ -1,0 +1,48 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    margin: 0;
+}
+
+h1, h2, h3 {
+    font-family: 'Oswald', sans-serif;
+}
+
+h1 {
+    padding: 15px;
+    background: indigo;
+    color: white;
+}
+
+.tag {
+    background: white;
+    color: indigo;
+    display: inline-block;
+    padding: 5px 10px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-weight: bold;
+}
+
+section {
+    padding: 0 15px;
+}
+
+code {
+    background: lightgray;
+    padding: 3px;
+    margin-right: 5px;
+}
+
+li * {
+    vertical-align: middle;
+}
+
+.method {
+    background: indigo;
+    color: white;
+    padding: 0 5px;
+    font-size: 15px;
+    margin-right: 5px;
+}

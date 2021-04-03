@@ -1,61 +1,33 @@
-import {
-    DataTypes,
-    Model,
-    ModelAttributes,
-} from 'sequelize';
-import {
-    ModelConfig,
-} from '../database/model-config.interface';
+import { Table, Column, Model, HasMany, DataType, IsUUID, PrimaryKey, IsDate, Default } from 'sequelize-typescript';
+import { UserNetwork } from './network.model';
 
-export const TABLE_NAME = 'users';
+@Table({
+    timestamps: true,
+    tableName: 'users',
+})
+export class User extends Model {
+    @IsUUID(4)
+    @Default(DataType.UUIDV4)
+    @PrimaryKey
+    @Column(DataType.UUID)
+    id: string;
 
-export interface AuthorizedSocialNetworks {
-    facebook: string;
-    github: string;
-    vkontakte: string;
+    @Column(DataType.STRING)
+    firstName: string;
+
+    @Column(DataType.STRING)
+    lastName: string;
+
+    @Column(DataType.STRING)
+    email: string;
+
+    @IsDate
+    @Column(DataType.DATE)
+    lastLoggedInDate: Date;
+
+    @HasMany(() => UserNetwork)
+    networks: UserNetwork[];
+
+    @Column(DataType.BOOLEAN)
+    active: boolean;
 }
-
-export class UserModel extends Model {
-    id!: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    sns?: AuthorizedSocialNetworks;
-    readonly createdAt?: Date;
-    readonly updatedAt?: Date;
-}
-
-export const userModelAttributes: ModelAttributes =  {
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV1,
-        primaryKey: true,
-    },
-    firstName: {
-        type: DataTypes.STRING,
-    },
-    lastName: {
-        type: DataTypes.STRING,
-    },
-    email: {
-        type: DataTypes.STRING,
-        unique: true,
-    },
-    sns: {
-        type: DataTypes.TEXT,
-        get() {
-            // @ts-ignore
-            return JSON.parse(this.getDataValue('sns'));
-        },
-        set(value) {
-            // @ts-ignore
-            this.setDataValue('sns', JSON.stringify(value));
-        },
-    },
-};
-
-export const modelUserConfig: ModelConfig = {
-    tableName: TABLE_NAME,
-    model: UserModel,
-    attributes: userModelAttributes,
-};
