@@ -2,11 +2,11 @@ import {
     AuthProviderConfig,
     BaseUserDetails,
     TokenData,
-} from './base.interface';
+} from '../base.interface';
 
 import requestPromise, { RequestPromiseOptions } from 'request-promise';
-import config from '../config/config';
-import { DEFAULT_AGENT, generateQueryParamsByObj } from '../utils/url';
+import config from '../../config/config';
+import { DEFAULT_AGENT, generateQueryParamsByObj } from '../../utils/url';
 
 export abstract class OauthBaseProvider {
     config: AuthProviderConfig;

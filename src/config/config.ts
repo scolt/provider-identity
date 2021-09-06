@@ -1,13 +1,13 @@
-import { OauthFacebookProvider } from '../providers/oauth.facebook.provider';
-import { OauthGithubProvider } from '../providers/oauth.github.provider';
-import { OauthVkProvider } from '../providers/oauth.vk.provider';
+import { OauthFacebookProvider } from '../providers/oauth/oauth.facebook.provider';
+import { OauthGithubProvider } from '../providers/oauth/oauth.github.provider';
+import { OauthVkProvider } from '../providers/oauth/oauth.vk.provider';
 
 export default {
     port: process.env.port || 3000,
     domain: process.env.domain || 'http://localhost:3000',
     pathname: process.env.pathname || '',
     databaseUrl: process.env.databaseURL || 'mysql://identity_admin:identity_admin1@localhost:3306/provider_identity',
-    supportedClients: ['ivwa'],
+    supportedClients: ['ivwa', 'rc'],
     authTokenSecretKey: '-1et$Try2ctrlvO0+!lie--itisnotrandom-15462',
     oauthProvidersConfigs: [{
         key: OauthFacebookProvider.key,
@@ -31,4 +31,11 @@ export default {
             secret: 'ltOvR8YT8fZaJels2pGy',
         },
     }],
+    mailer: {
+        auth: {
+            user: 'yellow.bat.identity.provider@gmail.com',
+            pass: 'bat.pro.ip2021',
+        },
+    },
+    secret: 'realStrangePassword',
 };

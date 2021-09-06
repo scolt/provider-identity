@@ -7,5 +7,5 @@ export const generateQueryParamsByObj = (obj: any, prefix = '?'): string => {
         queries += `${key}=${obj[key]}`;
         if (index < array.length - 1) queries += '&';
         return queries;
-    }, '');
-}
+    },                             '');
+};

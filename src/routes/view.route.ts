@@ -5,24 +5,18 @@ import {
 } from 'express';
 import config from '../config/config';
 import serveStatic from 'serve-static';
+import * as path from 'path';
 
 export function initializeViewsRouter() {
     const router = Router();
 
-    router.get('/:adapter/login',  (req: Request, res: Response) => {
-        const adapterId = <string>req.params['adapter'] || '';
-        const redirectUrl= <string>req.query['redirect_uri'] || 'https://webtech.by';
-        const { pathname } = config;
-        const isAvailableClient = config.supportedClients.indexOf(adapterId.toLowerCase()) > -1;
-        if (isAvailableClient) {
-            res.render(`${adapterId}/.login`, {
-                pathname,
-                adapterId,
-                redirectUrl,
-            });
-        } else {
-            res.render('plain/.errorNotSupportedClient', { test: true });
-        }
+    config.supportedClients.map((client) => {
+        router.get(`/${client}`,  (req: Request, res: Response) => {
+            const redirectUrl = req.query.redirect_uri;
+            res.cookie('redirect_url', redirectUrl, { httpOnly: true });
+            res.cookie('adapter', client, { httpOnly: true });
+            res.sendFile(path.join(`${__dirname}/../views/${client}/index.html`));
+        });
     });
 
     router.use(serveStatic(`${__dirname}/../views/`));

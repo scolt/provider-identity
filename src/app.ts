@@ -11,11 +11,15 @@ import { initializeAuthRouter } from './routes/auth.route';
 import { initializeMainRouter } from './routes/main.route';
 import { UserService } from './services/user.service';
 import { AuthService } from './services/auth.service';
+import logger from './utils/logger';
+import bodyParser from 'body-parser';
 
 const userService = new UserService();
 const authService = new AuthService();
 
 function estabilishMiddlewares(app: Express) {
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
     app.use(cookieParser());
 }
 
@@ -41,11 +45,17 @@ async function establishDatabase() {
     });
 
     db.connect();
-    await db.initModels([
-        User,
-        UserNetwork,
-        UserAdapter,
-    ]);
+    logger.info(`Database connection established via ${config.databaseUrl}`);
+    try {
+        await db.initModels([
+            User,
+            UserNetwork,
+            UserAdapter,
+        ]);
+    } catch (e) {
+        logger.error('Error while sync database and models', e);
+    }
+
 }
 
 async function startApplication() {
@@ -57,7 +67,9 @@ async function startApplication() {
     establishRoutes(app);
 
     app.listen(config.port, () => {
-        console.log('Identity provider listening on port 3000!');
+        const splitDomain = config.domain.split(':');
+        const domainWithoutPort = splitDomain[0] + splitDomain[1];
+        logger.info(`Identity provider: ${domainWithoutPort}${config.pathname}:${config.port}`);
     });
 }
 

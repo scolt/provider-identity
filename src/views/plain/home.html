@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Identity Provider</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta name="charset" content="UTF-8" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel=" stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&amp;display=swap" />
+    <link rel=" stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap" />
+    <script src="https://kit.fontawesome.com/2bf6f1b5d2.js" crossorigin="anonymous"></script>
+    <link href="plain/home.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+<h1>Yellow Bat Team Identity Provider</h1>
+<div class="tag">identity-as-a-service</div>
+<section>
+    <p>This service provide ability to any application to use social media authorization by oauth.</p>
+    <p>Only one thing that you should do add link to the your identity adapter on your page and then exchange the code for the token</p>
+</section>
+<section>
+    <h2>How it works</h2>
+    <ol>
+        <li>The user click on the link (e.g. https://api.webtech.by/identity/ivwa/login?redirect_url=https://vk.com)</li>
+        <li>The user is redirected to the your styled page and have the options for authorization</li>
+        <li>The user is authorized by any social media and redirected back to your application</li>
+        <li>Your backend application should read the code from URL and exchange it to JWT token by API</li>
+        <li>Your application can read the user details by making call to API</li>
+    </ol>
+</section>
+<section>
+    <h2>API</h2>
+    <ul>
+        <li><span class="method">POST</span><code>https://webtech.by/identity/token</code><span>The API for exchange code to token ({ code: string})</span></li>
+        <li><span class="method">GET</span><code>https://webtech.by/identity/me</code><span>The API for recievent the user details</span></li>
+    </ul>
+</section>
+<section>
+    <h2>Supported Clients</h2>
+    <ul>
+        <li>Github</li>
+        <li>Facebook (WIP)</li>
+    </ul>
+</section>
+</body>
+
+</html>

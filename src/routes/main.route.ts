@@ -5,19 +5,19 @@ import {
 } from 'express';
 import serveStatic from 'serve-static';
 import config from '../config/config';
+import path from 'path';
 
 export function initializeMainRouter() {
     const router = Router();
     const { pathname } = config;
 
     router.get('/',  (req: Request, res: Response) => {
-        res.render('plain/.home', { pathname });
+        res.sendFile(path.join(`${__dirname}/../views/plain/home.html`));
     });
 
     router.get('/policy',  (req: Request, res: Response) => {
-        res.render('plain/.policy', { pathname });
+        res.sendFile(path.join(`${__dirname}/../views/plain/policy.html`));
     });
-
 
     router.use(serveStatic(`${__dirname}/../views/`));
 

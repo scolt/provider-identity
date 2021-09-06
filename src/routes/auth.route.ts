@@ -1,13 +1,11 @@
-import {
-    Router,
-    Request,
-    Response, NextFunction,
-} from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 
 import config from '../config/config';
 import logger from '../utils/logger';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
+import { AuthSimpleProvider } from '../providers/simple/simple.provider';
+import { EmailService } from '../services/email.service';
 
 export function initializeAuthRouter(
     userService: UserService,
@@ -50,13 +48,10 @@ export function initializeAuthRouter(
 
         router.get(`/:adapter/${config.key}`, (req: Request, res: Response) => {
             const adapter = req.params['adapter'];
-            const redirectUrl = req.query.redirect_uri;
             logger.debug(
-                `Attempt to initialize authorization through ${config.key} for ${adapter}`,
+                `Attempt to initialize authorization through ${config.key} for ${adapter}.`,
             );
-            res.cookie('redirect_url', redirectUrl, { httpOnly: true });
             res.cookie('network', config.key, { httpOnly: true });
-            res.cookie('adapter', adapter, { httpOnly: true });
             res.redirect(`${pathname}/redirect/${config.key}`);
         });
 
@@ -89,8 +84,71 @@ export function initializeAuthRouter(
                 return;
             }
         });
-
     });
+
+    const emailService = new EmailService();
+    const simple = new AuthSimpleProvider(emailService);
+    router.post('/validate', async (req, res) => {
+        const redirectUrl = req.cookies['redirect_url'];
+        const registrationErrors = await simple.getRegistrationDataError(req.body);
+        const isError = Object.values(registrationErrors).length;
+        if (isError) {
+            res.json({
+                status: 'validation-error',
+                errors: registrationErrors,
+            });
+            return;
+        }
+
+        const isCodeSent = await simple.sendCodeBasedOnDetails(req.body, redirectUrl);
+        res.json({ status: isCodeSent ? 'success' : 'failed' });
+    });
+
+    router.post('/register', async (req, res) => {
+        try {
+            const config = await simple.validateCodeAndReturnConfig(req.body.code);
+            const userDetails = await userService.tryIdentifyAndUpdateUser(
+                config.details,
+                req.cookies['adapter'],
+            );
+            const identityCode = await authService.generateCodeByUser(userDetails);
+
+            res.json({
+                status: 'success' ,
+                url: `${req.cookies.redirect_url}?code=${identityCode}` },
+            );
+        } catch (e) {
+            logger.error('Registration failed', e);
+            res.json({ status: 'failed', error: 'Code is invalid!' });
+        }
+    });
+
+    // router.post('/:adapter/register', async (req, res) => {
+    //     const redirectUrl = req.body['redirect_url'];
+    //     const result = await userService.tryRegisterUser(req.body, req.params.adapter);
+    //     if (result.data) {
+    //         const identityCode = await authService.generateCodeByUser(result.data);
+    //         res.redirect(`${redirectUrl}?code=${identityCode}`);
+    //     } else {
+    //         res.send(result);
+    //     }
+    // });
+    //
+    // router.post('/:adapter/sign-in', async (req, res) => {
+    //     const redirectUrl = req.body['redirect_url'];
+    //     try {
+    //         const { err, data } = await userService.trySignInUser(req.body, req.params.adapter);
+    //         if (data) {
+    //             const identityCode = await authService.generateCodeByUser(data);
+    //             res.redirect(`${redirectUrl}?code=${identityCode}`);
+    //         } else {
+    //             res.send(err);
+    //         }
+    //     } catch(e) {
+    //         res.send('Беда...')
+    //     }
+    //
+    // });
 
     return router;
 }

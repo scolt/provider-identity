@@ -1,5 +1,5 @@
 import { OauthBaseProvider } from './oauth.base.provider';
-import { BaseUserDetails } from './base.interface';
+import { BaseUserDetails } from '../base.interface';
 import requestPromise from 'request-promise';
 
 export class OauthGithubProvider extends OauthBaseProvider {

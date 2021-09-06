@@ -54,6 +54,6 @@ export class AuthService {
             email: userDetails.user.email,
             firstName: userDetails.user.firstName,
             lastName: userDetails.user.lastName,
-        }, config.authTokenSecretKey);
+        },                       config.authTokenSecretKey);
     }
 }
