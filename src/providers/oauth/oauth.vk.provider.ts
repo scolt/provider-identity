@@ -1,5 +1,5 @@
 import { OauthBaseProvider } from './oauth.base.provider';
-import { AuthProviderConfig, BaseUserDetails } from '../base.interface';
+import { BaseUserDetails } from '../base.interface';
 
 export class OauthVkProvider extends OauthBaseProvider {
     static key = 'vk';
@@ -9,11 +9,11 @@ export class OauthVkProvider extends OauthBaseProvider {
     scope = 'email';
 
     getOriginalUrl() {
-        return `${super.getOriginalUrl()}&v=5.64`;
+        return `${super.getOriginalUrl()}&v=5.131`;
     }
 
     getApiRequestUrl(token: string): string {
-        return `${this.apiUrl}/users.get?&access_token=${token}&v=5.64`;
+        return `${this.apiUrl}/users.get?&access_token=${token}&v=5.131`;
     }
 
     async processUserData(userData: string, tokenData: any): Promise<BaseUserDetails> {
