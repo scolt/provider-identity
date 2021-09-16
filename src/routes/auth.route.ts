@@ -88,6 +88,7 @@ export function initializeAuthRouter(
 
     const emailService = new EmailService();
     const simple = new AuthSimpleProvider(emailService);
+
     router.post('/validate', async (req, res) => {
         const redirectUrl = req.cookies['redirect_url'];
         const registrationErrors = await simple.getRegistrationDataError(req.body);
@@ -104,6 +105,22 @@ export function initializeAuthRouter(
         res.json({ status: isCodeSent ? 'success' : 'failed' });
     });
 
+    router.post('/sign-in', async (req, res) => {
+        try {
+            const config = await simple.validateCodeAndReturnConfig(req.body.code);
+            const userDetails = await simple.getUserDetailsByCredentials(req.body);
+            const identityCode = authService.generateCodeByUser(userDetails);
+
+            res.json({
+                status: 'success' ,
+                url: `${req.cookies.redirect_url}?code=${identityCode}` },
+            );
+        } catch (e) {
+            logger.error('Sign in failed', e);
+            res.json({ status: 'failed', error: 'Credentials are invalid.' });
+        }
+    });
+
     router.post('/register', async (req, res) => {
         try {
             const config = await simple.validateCodeAndReturnConfig(req.body.code);
@@ -111,7 +128,7 @@ export function initializeAuthRouter(
                 config.details,
                 req.cookies['adapter'],
             );
-            const identityCode = await authService.generateCodeByUser(userDetails);
+            const identityCode = authService.generateCodeByUser(userDetails);
 
             res.json({
                 status: 'success' ,
@@ -123,32 +140,15 @@ export function initializeAuthRouter(
         }
     });
 
-    // router.post('/:adapter/register', async (req, res) => {
-    //     const redirectUrl = req.body['redirect_url'];
-    //     const result = await userService.tryRegisterUser(req.body, req.params.adapter);
-    //     if (result.data) {
-    //         const identityCode = await authService.generateCodeByUser(result.data);
-    //         res.redirect(`${redirectUrl}?code=${identityCode}`);
-    //     } else {
-    //         res.send(result);
-    //     }
-    // });
-    //
-    // router.post('/:adapter/sign-in', async (req, res) => {
-    //     const redirectUrl = req.body['redirect_url'];
-    //     try {
-    //         const { err, data } = await userService.trySignInUser(req.body, req.params.adapter);
-    //         if (data) {
-    //             const identityCode = await authService.generateCodeByUser(data);
-    //             res.redirect(`${redirectUrl}?code=${identityCode}`);
-    //         } else {
-    //             res.send(err);
-    //         }
-    //     } catch(e) {
-    //         res.send('Беда...')
-    //     }
-    //
-    // });
+    router.post('/token', async (req, res) => {
+        const token = authService.generateTokenByCode(req.body.code);
+        if (token) {
+            res.json({ token, status: 'success' });
+        } else {
+            res.status(401).send();
+        }
+        res.json();
+    });
 
     return router;
 }

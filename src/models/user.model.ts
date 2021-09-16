@@ -13,6 +13,7 @@ import {
 import { UserNetwork } from './network.model';
 import crypto from 'crypto';
 import config from '../config/config';
+import { UserAdapter } from './adapter.model';
 
 @Table({
     timestamps: true,
@@ -46,6 +47,9 @@ export class User extends Model {
 
     @HasMany(() => UserNetwork)
     networks: UserNetwork[];
+
+    @HasMany(() => UserAdapter)
+    adapters: UserAdapter[];
 
     @Column(DataType.BOOLEAN)
     active: boolean;

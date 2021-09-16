@@ -1,9 +1,10 @@
-import { RegistrationData } from '../base.interface';
+import { BaseUserDetails, RegistrationData, SignInData } from '../base.interface';
 import { User } from '../../models/user.model';
 import { UserNetwork } from '../../models/network.model';
 import { ValidationMap } from '../../services/user.service';
 import crypto from 'crypto';
 import { EmailService } from '../../services/email.service';
+import logger from '../../utils/logger';
 
 export interface ConfirmationCodeObject {
     timer: NodeJS.Timeout;
@@ -19,6 +20,27 @@ export class AuthSimpleProvider {
     confirmationCodes: ConfirmationCodeDictionary = {};
 
     constructor(private mailService: EmailService) {}
+
+    async getUserDetailsByCredentials(signInData: SignInData): Promise<BaseUserDetails> {
+        const user = await User.findOne({where: {
+            email: signInData.email,
+        }});
+
+        if (!user) {
+            logger.info(`${signInData.email} does not exist.`);
+            throw new Error('Credentials are not valid.');
+        }
+
+        const isPasswordValid = User.isPasswordValid(user, signInData.password);
+
+        if (!isPasswordValid) {
+            logger.info(`Password for ${signInData.email} is invalid.`);
+            throw new Error('Credentials are not valid.');
+        }
+
+        user.password = '';
+        return user;
+    }
 
     async getRegistrationDataError(user: RegistrationData): Promise<ValidationMap> {
         const errors: ValidationMap = {};
@@ -74,6 +96,7 @@ export class AuthSimpleProvider {
             await this.mailService.sendCode(user.email, code);
             return true;
         } catch (e) {
+            logger.error(e);
             clearTimeout(this.confirmationCodes[code].timer);
             delete this.confirmationCodes[code];
             return false;
