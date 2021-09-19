@@ -94,7 +94,7 @@ export function initializeAuthRouter(
         const registrationErrors = await simple.getRegistrationDataError(req.body);
         const isError = Object.values(registrationErrors).length;
         if (isError) {
-            res.json({
+            res.status(400).json({
                 status: 'validation-error',
                 errors: registrationErrors,
             });
@@ -117,7 +117,7 @@ export function initializeAuthRouter(
             );
         } catch (e) {
             logger.error('Sign in failed', e);
-            res.json({ status: 'failed', error: 'Credentials are invalid.' });
+            res.status(400).json({ status: 'failed', error: 'Credentials are invalid.' });
         }
     });
 
@@ -136,7 +136,7 @@ export function initializeAuthRouter(
             );
         } catch (e) {
             logger.error('Registration failed', e);
-            res.json({ status: 'failed', error: 'Code is invalid!' });
+            res.status(400).json({ status: 'failed', error: 'Code is invalid!' });
         }
     });
 

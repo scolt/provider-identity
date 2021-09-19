@@ -15,11 +15,11 @@ export function initializeViewsRouter() {
             const redirectUrl = req.query.redirect_uri;
             res.cookie('redirect_url', redirectUrl, { httpOnly: true });
             res.cookie('adapter', client, { httpOnly: true });
-            res.sendFile(path.join(`${__dirname}/../views/${client}/index.html`));
+            res.sendFile(path.join(`${config.viewsPath}/${client}/index.html`));
         });
     });
 
-    router.use(serveStatic(`${__dirname}/../views/`));
+    router.use(serveStatic(`${config.viewsPath}/`));
 
     return router;
 }

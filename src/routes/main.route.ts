@@ -20,6 +20,9 @@ export function initializeMainRouter() {
     });
 
     router.use(serveStatic(`${__dirname}/../views/`));
+    router.use((req: Request, res: Response) => {
+        res.sendFile(path.join(`${__dirname}/../views/plain/error.html`));
+    });
 
     return router;
 }

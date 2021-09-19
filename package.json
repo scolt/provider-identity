@@ -4,9 +4,8 @@
   "description": "Identity Provider",
   "main": "no",
   "scripts": {
-    "copy:views": "copyfiles ./src/views/**/**.* ./dist/views -a -u 2",
     "copy:packages": "copyfiles ./package.json ./dist",
-    "build": "npx typescript -v & tsc & npm run copy:views",
+    "build": "npx typescript -v & tsc",
     "lint": "tslint ./src/**/*.ts",
     "lint:fix": "tslint ./src/**/*.ts --fix",
     "start:dev": "ts-node-dev ./src/app.ts"

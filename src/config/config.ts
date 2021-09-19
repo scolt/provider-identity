@@ -4,6 +4,7 @@ import { OauthVkProvider } from '../providers/oauth/oauth.vk.provider';
 
 export default {
     port: process.env.port || 3000,
+    viewsPath: process.env.viewsPath || `${__dirname}/../../views`,
     domain: process.env.domain || 'http://localhost:3000',
     pathname: process.env.pathname || '',
     databaseUrl: process.env.databaseURL || 'mysql://identity_admin:identity_admin1@localhost:3306/provider_identity',

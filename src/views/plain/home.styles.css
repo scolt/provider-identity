@@ -9,20 +9,20 @@ h1, h2, h3 {
 }
 
 h1 {
+    align-items: center;
     padding: 15px;
-    background: indigo;
-    color: white;
+    background: #333;
+    color: #ffcc33;
+    display: flex;
+    justify-content: space-between;
 }
 
 .tag {
     background: white;
-    color: indigo;
-    display: inline-block;
+    color: #333;
+    height: max-content;
     padding: 5px 10px;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    font-weight: bold;
+    font-size: 0.5em;
 }
 
 section {
@@ -40,7 +40,7 @@ li * {
 }
 
 .method {
-    background: indigo;
+    background: #333;
     color: white;
     padding: 0 5px;
     font-size: 15px;
