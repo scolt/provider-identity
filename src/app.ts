@@ -1,13 +1,17 @@
 import express, { Express } from 'express';
 import cookieParser from 'cookie-parser';
-import config from './config/config';
+import { config } from './config';
 
 import { Database } from './database/database';
 import { User } from './models/user.model';
 import { UserNetwork } from './models/network.model';
 import { UserAdapter } from './models/adapter.model';
+import { UserToken } from './models/token.model';
+
 import { initializeViewsRouter } from './routes/view.route';
-import { initializeAuthRouter } from './routes/auth.route';
+import { initializeAuthTokensRouter } from './routes/auth.tokens.route';
+import { initializeAuthOAuthRouter } from './routes/auth.oauth.route';
+import { initializeAuthSimpleRouter } from './routes/auth.simple.route';
 import { initializeMainRouter } from './routes/main.route';
 import { UserService } from './services/user.service';
 import { AuthService } from './services/auth.service';
@@ -30,7 +34,9 @@ function establishViewEngine(app: Express) {
 
 function establishRoutes(app: Express) {
     const routes = [
-        initializeAuthRouter.bind(null, userService, authService),
+        initializeAuthOAuthRouter.bind(null, userService, authService),
+        initializeAuthSimpleRouter.bind(null, userService, authService),
+        initializeAuthTokensRouter.bind(null, authService),
         initializeViewsRouter,
         initializeMainRouter,
     ];
@@ -51,6 +57,7 @@ async function establishDatabase() {
             User,
             UserNetwork,
             UserAdapter,
+            UserToken,
         ]);
     } catch (e) {
         logger.error('Error while sync database and models', e);

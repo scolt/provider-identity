@@ -4,7 +4,7 @@ import {
     Response,
 } from 'express';
 import serveStatic from 'serve-static';
-import config from '../config/config';
+import { config } from '../config';
 import path from 'path';
 
 export function initializeMainRouter() {

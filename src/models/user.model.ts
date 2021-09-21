@@ -12,7 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { UserNetwork } from './network.model';
 import crypto from 'crypto';
-import config from '../config/config';
+import { config } from '../config';
 import { UserAdapter } from './adapter.model';
 
 @Table({
@@ -64,7 +64,7 @@ export class User extends Model {
 
     static encryptPasswordWithSalt(password: string, salt: string) {
         const key = crypto.createHash('sha256')
-            .update(config.secret)
+            .update(config.passwordSecret)
             .digest('base64')
             .substr(0, 32);
 

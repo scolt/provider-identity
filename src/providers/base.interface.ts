@@ -33,3 +33,10 @@ export interface TokenData {
     access_token: string;
     [key: string]: any;
 }
+
+export interface TokenPayloadData {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+}

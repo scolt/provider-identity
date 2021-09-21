@@ -5,7 +5,7 @@ import {
 } from '../base.interface';
 
 import requestPromise, { RequestPromiseOptions } from 'request-promise';
-import config from '../../config/config';
+import { config } from '../../config';
 import { DEFAULT_AGENT, generateQueryParamsByObj } from '../../utils/url';
 
 export abstract class OauthBaseProvider {

@@ -3,14 +3,14 @@ import {
     Request,
     Response,
 } from 'express';
-import config from '../config/config';
+import { config } from '../config';
 import serveStatic from 'serve-static';
 import * as path from 'path';
 
 export function initializeViewsRouter() {
     const router = Router();
 
-    config.supportedClients.map((client) => {
+    config.supportedClients.map((client: string) => {
         router.get(`/${client}`,  (req: Request, res: Response) => {
             const redirectUrl = req.query.redirect_uri;
             res.cookie('redirect_url', redirectUrl, { httpOnly: true });

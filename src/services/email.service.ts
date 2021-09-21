@@ -1,6 +1,7 @@
 import { createTransport } from 'nodemailer';
-import config from '../config/config';
 import mailer from 'nodemailer/lib/mailer';
+
+import { config } from '../config';
 
 export class EmailService {
     private transporter: mailer;
@@ -20,7 +21,6 @@ export class EmailService {
             text: `Your registration code is ${code}`,
         },                                                                (error) => {
             if (error) {
-                console.log(error);
                 reject(error);
             } else {
                 resolve('ok');
