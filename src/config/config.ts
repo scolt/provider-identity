@@ -15,7 +15,8 @@ export const config = {
         },
     },
 
-    privateKey: process.env.privateKey || fs.readFileSync(`${__dirname}/../../keys/identity`),
-    publicKey: process.env.privateKey || fs.readFileSync(`${__dirname}/../../keys/identity.pub`),
+    privateKey: fs.readFileSync(`${__dirname}/../../keys/private`, 'utf8'),
+    publicKey: fs.readFileSync(`${__dirname}/../../keys/public`, 'utf8'),
+    tokenSecret: '[A]AQmdQC,>rOelno6(k"x]xF&wc0c',
     passwordSecret: 'realStrangePassword',
 };

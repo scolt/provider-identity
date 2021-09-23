@@ -9,19 +9,18 @@ import path from 'path';
 
 export function initializeMainRouter() {
     const router = Router();
-    const { pathname } = config;
 
     router.get('/',  (req: Request, res: Response) => {
-        res.sendFile(path.join(`${__dirname}/../views/plain/home.html`));
+        res.sendFile(path.join(`${__dirname}/../views/home.html`));
     });
 
     router.get('/policy',  (req: Request, res: Response) => {
-        res.sendFile(path.join(`${__dirname}/../views/plain/policy.html`));
+        res.sendFile(path.join(`${__dirname}/../views/policy.html`));
     });
 
     router.use(serveStatic(`${__dirname}/../views/`));
     router.use((req: Request, res: Response) => {
-        res.sendFile(path.join(`${__dirname}/../views/plain/error.html`));
+        res.sendFile(path.join(`${__dirname}/../views/error.html`));
     });
 
     return router;

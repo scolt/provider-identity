@@ -4,8 +4,9 @@
   "description": "Identity Provider",
   "main": "no",
   "scripts": {
+    "copy:views": "copyfiles ./src/views/**/**.* ./dist/views -a -u 2",
     "copy:packages": "copyfiles ./package.json ./dist",
-    "build": "npx typescript -v & tsc",
+    "build": "rimraf ./dist && npx typescript -v && tsc && npm run copy:views && npm run copy:packages",
     "lint": "tslint ./src/**/*.ts",
     "lint:fix": "tslint ./src/**/*.ts --fix",
     "start:dev": "ts-node-dev ./src/app.ts"
@@ -42,6 +43,7 @@
     "@types/validator": "^13.1.3",
     "copyfiles": "^2.4.1",
     "pre-commit": "^1.2.2",
+    "rimraf": "^3.0.2",
     "sequelize-typescript": "^2.1.0",
     "ts-node-dev": "^1.1.8",
     "tslint": "^5.20.1",

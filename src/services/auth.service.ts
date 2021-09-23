@@ -50,8 +50,9 @@ export class AuthService {
         const accessTokenExpiresIn = 3 * 60 * 60;
         const refreshTokenExpiresIn = 365 * 24 * 60 * 60;
 
-        const refreshExpiresDate = new DateTime();
-        refreshExpiresDate.plus({ seconds: refreshTokenExpiresIn });
+        const refreshExpiresDate = DateTime.now()
+            .plus({ seconds: refreshTokenExpiresIn })
+            .toJSDate();
 
         const payload = {
             id: userDetails.id,
@@ -102,6 +103,10 @@ export class AuthService {
                 { algorithms: ['RS256'] },
             ) as TokenPayloadData;
             throw new Error(`Refresh token is invalid: ${token}. For user ${id}`);
+        }
+
+        if (DateTime.fromJSDate(userToken.expiresDate) <= DateTime.now()) {
+            throw new Error(`Refresh token is invalid: ${token}. It is expired`);
         }
 
         const user = await User.findByPk(userToken.userId);

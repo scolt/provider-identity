@@ -12,6 +12,17 @@ export function initializeAuthTokensRouter(
 ) {
     const router = Router();
 
+    router.get('/cc', async (req, res) => {
+        const code = authService.generateCodeByUser({
+            id: 'test-id',
+            email: 'test-email@com.com',
+            firstName: 'Test',
+            lastName: 'User',
+        });
+
+        res.send(code);
+    });
+
     router.post('/token', async (req, res) => {
         try {
             const { grant_type, refresh_token, code } = req.query;
@@ -21,6 +32,7 @@ export function initializeAuthTokensRouter(
             } else {
                 tokens = await authService.initializeTokensByCode(code as string);
             }
+
             res.json({ ...tokens, status: 'success' });
         } catch (e) {
             logger.error('Token creation is failed', e);
