@@ -13,7 +13,9 @@ export function initializeViewsRouter() {
     config.supportedClients.map((client: string) => {
         router.get(`/${client}`,  (req: Request, res: Response) => {
             const redirectUrl = req.query.redirect_uri;
-            res.cookie('redirect_url', redirectUrl, { httpOnly: true });
+            if (redirectUrl) {
+                res.cookie('redirect_url', redirectUrl, { httpOnly: true });
+            }
             res.cookie('adapter', client, { httpOnly: true });
             res.sendFile(path.join(`${config.viewsPath}/${client}/index.html`));
         });

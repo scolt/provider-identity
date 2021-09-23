@@ -4,6 +4,7 @@ import { config, oauthProvidersConfigs } from '../config';
 import logger from '../utils/logger';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
+import { ErrorMessages } from '../utils/errors';
 
 export function initializeAuthOAuthRouter(
     userService: UserService,
@@ -16,7 +17,7 @@ export function initializeAuthOAuthRouter(
         const { error } = req.query;
         const adapter = req.cookies['adapter'];
         if (error && adapter) {
-            res.redirect(`${pathname}/${adapter}/login?error=${error}`);
+            res.redirect(`${pathname}/${adapter}?error=${error}`);
         } else {
             next();
         }
@@ -44,24 +45,30 @@ export function initializeAuthOAuthRouter(
             res.redirect(providerInstance.getOriginalUrl());
         });
 
-        router.get(`/:adapter/${config.key}`, (req: Request, res: Response) => {
-            const adapter = req.params['adapter'];
+        router.get(`/oauth/${config.key}`, (req: Request, res: Response) => {
+            const adapter = req.cookies['adapter'];
+            const redirectUrl = req.cookies['redirect_url'];
             logger.debug(
                 `Attempt to initialize authorization through ${config.key} for ${adapter}.`,
             );
-            res.cookie('network', config.key, { httpOnly: true });
-            res.redirect(`${pathname}/redirect/${config.key}`);
+            if (!redirectUrl) {
+                res.redirect(`${pathname}/${adapter}?error=${ErrorMessages.NO_REDIRECT_URL}`);
+            } else {
+                res.cookie('network', config.key, { httpOnly: true });
+                res.redirect(`${pathname}/redirect/${config.key}`);
+            }
+
         });
 
         router.get(`/${config.key}/callback`, async (req, res) => {
             const { code, error } = req.query;
-            const adapter = req.cookies['adapter'];
+            const { adapter, redirect_url } = req.cookies;
 
             if (error || !code) {
                 logger.debug(
                     `Code receiving is failed from ${config.key} for ${adapter}. ${error}`,
                 );
-                res.redirect(`${pathname}/${adapter}/login?error=${error}`);
+                res.redirect(`${pathname}/${adapter}?error=${error}`);
                 return;
             }
 
@@ -71,14 +78,14 @@ export function initializeAuthOAuthRouter(
             try {
                 userDetails = await providerInstance.authenticate(<string>code);
                 await userService.tryIdentifyAndUpdateUser(userDetails, adapter);
-                const identityCode = await authService.generateCodeByUser(userDetails);
-                if (!req.cookies.redirect_url) {
+                const identityCode = authService.generateCodeByUser(userDetails);
+                if (!redirect_url) {
                     throw new Error('Redirect URL is undefined');
                 }
-                res.redirect(`${req.cookies.redirect_url}?code=${identityCode}`);
+                res.redirect(`${redirect_url}?code=${identityCode}`);
             } catch (userDetailsError) {
                 logger.debug(`Authentication is failed from ${config.key} for ${adapter}. ${userDetailsError}`);
-                res.redirect(`${pathname}/${adapter}/login?error=authentication_error`);
+                res.redirect(`${pathname}/${adapter}?error=authentication_error`);
                 return;
             }
         });

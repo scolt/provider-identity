@@ -7,6 +7,7 @@ import {
 import requestPromise, { RequestPromiseOptions } from 'request-promise';
 import { config } from '../../config';
 import { DEFAULT_AGENT, generateQueryParamsByObj } from '../../utils/url';
+import logger from '../../utils/logger';
 
 export abstract class OauthBaseProvider {
     config: AuthProviderConfig;
@@ -28,6 +29,10 @@ export abstract class OauthBaseProvider {
 
     abstract getApiRequestUrl(token: string): string;
     abstract processUserData(userData: string, tokenData?: TokenData): Promise<BaseUserDetails>;
+
+    getRequestOptions(value?: string) {
+        return this.requestOptions;
+    }
 
     getOriginalUrl() {
         const query = generateQueryParamsByObj({
@@ -67,7 +72,7 @@ export abstract class OauthBaseProvider {
         } else {
             const userDetails = await requestPromise.get(
                 this.getApiRequestUrl(parsedResponseAuth.access_token),
-                this.requestOptions,
+                this.getRequestOptions(parsedResponseAuth.access_token),
             );
             return this.processUserData(userDetails, parsedResponseAuth);
         }

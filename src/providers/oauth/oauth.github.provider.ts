@@ -9,6 +9,16 @@ export class OauthGithubProvider extends OauthBaseProvider {
     apiUrl = 'https://api.github.com';
     scope = 'user:email user';
 
+    getRequestOptions(value: string): requestPromise.RequestPromiseOptions {
+        return {
+            ...this.requestOptions,
+            headers: {
+                ...this.requestOptions.headers,
+                Authorization: `token ${value}`,
+            },
+        };
+    }
+
     getApiRequestUrl(token: string): string {
         return `${this.apiUrl}/user?&access_token=${token}`;
     }
@@ -20,7 +30,7 @@ export class OauthGithubProvider extends OauthBaseProvider {
     async processUserData(userData: string, tokenData: any): Promise<BaseUserDetails> {
         const emailsResponse = await requestPromise.get(
             this.getApiEmailRequestUrl(tokenData.access_token),
-            this.requestOptions,
+            this.getRequestOptions(tokenData.access_token),
         );
         const emails = JSON.parse(emailsResponse);
         const data = JSON.parse(userData);
