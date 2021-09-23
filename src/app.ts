@@ -1,5 +1,8 @@
 import express, { Express } from 'express';
 import cookieParser from 'cookie-parser';
+import { config as dotenv } from 'dotenv';
+dotenv();
+
 import { config } from './config';
 
 import { Database } from './database/database';

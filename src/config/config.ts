@@ -1,22 +1,24 @@
 import fs from 'fs';
+import path from 'path';
+
+const { env } = process;
 
 export const config = {
-    domain: process.env.domain || 'http://localhost:3000',
-    pathname: process.env.pathname || '',
-    port: process.env.port || 3000,
-    viewsPath: process.env.viewsPath || `${__dirname}/../../views`,
-    databaseUrl: process.env.databaseURL || 'mysql://identity_admin:identity_admin1@localhost:3306/provider_identity',
-
-    supportedClients: ['ivwa'],
+    domain: env.domain || 'http://localhost:3000',
+    pathname: env.pathname || '',
+    port: env.port || 3000,
+    viewsPath: env.viewsPath || `${__dirname}/../../views`,
+    databaseUrl: env.databaseURL || '',
+    supportedClients: env.supportedClients ? env.supportedClients.split(',') : [],
     mailer: {
         auth: {
-            user: 'yellow.bat.identity.provider@gmail.com',
-            pass: 'bat.pro.ip2021',
+            user: env.mailerAuthUser,
+            pass: env.mailerAuthPass,
         },
     },
 
-    privateKey: fs.readFileSync(`${__dirname}/../../keys/private`, 'utf8'),
-    publicKey: fs.readFileSync(`${__dirname}/../../keys/public`, 'utf8'),
-    tokenSecret: '[A]AQmdQC,>rOelno6(k"x]xF&wc0c',
-    passwordSecret: 'realStrangePassword',
+    privateKey: env.privateKeyPath ? fs.readFileSync(path.normalize(env.privateKeyPath), 'utf8') : '',
+    publicKey: env.publicKeyPath ? fs.readFileSync(path.normalize(env.publicKeyPath), 'utf8') : '',
+    tokenSecret: env.tokenSecret || 'must-be-changed with .env',
+    passwordSecret: env.passwordSecret || 'must-be-changed with .env',
 };

@@ -24,6 +24,7 @@ export function initializeAuthOAuthRouter(
     });
 
     oauthProvidersConfigs.forEach((config) => {
+
         if (!config.key) {
             logger.error('"key" property must be provided. to "authProvidersConfigs"');
             return;
@@ -34,7 +35,7 @@ export function initializeAuthOAuthRouter(
             return;
         }
 
-        if (!config.credentials) {
+        if (!config.credentials || !config.credentials.secret || !config.credentials.clientId) {
             logger.error(`"credentials" property for ${config.key} must be provided.`);
             return;
         }
