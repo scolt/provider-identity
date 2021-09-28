@@ -1,5 +1,5 @@
-import { OauthBaseProvider } from './oauth.base.provider';
 import { BaseUserDetails } from '../base.interface';
+import { OauthBaseProvider } from './oauth.base.provider';
 
 export class OauthFacebookProvider extends OauthBaseProvider {
     static key = 'facebook';

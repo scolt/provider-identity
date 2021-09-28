@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
     Table,
     Column,
@@ -10,9 +11,8 @@ import {
     Default,
     BeforeCreate,
 } from 'sequelize-typescript';
-import { UserNetwork } from './network.model';
-import crypto from 'crypto';
 import { config } from '../config';
+import { UserNetwork } from './network.model';
 import { UserAdapter } from './user.adapter.model';
 
 @Table({

@@ -1,8 +1,8 @@
+import crypto from 'crypto';
 import { BaseUserDetails, RegistrationData, SignInData } from '../base.interface';
 import { User } from '../../models/user.model';
 import { UserNetwork } from '../../models/network.model';
 import { ValidationMap } from '../../services/user.service';
-import crypto from 'crypto';
 import { EmailService } from '../../services/email.service';
 import logger from '../../utils/logger';
 

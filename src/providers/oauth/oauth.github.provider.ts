@@ -1,6 +1,6 @@
-import { OauthBaseProvider } from './oauth.base.provider';
-import { BaseUserDetails, TokenData } from '../base.interface';
 import requestPromise, { RequestPromiseOptions } from 'request-promise';
+import { BaseUserDetails, TokenData } from '../base.interface';
+import { OauthBaseProvider } from './oauth.base.provider';
 
 export class OauthGithubProvider extends OauthBaseProvider {
     static key = 'github';

@@ -1,16 +1,16 @@
-import winston from 'winston';
+import { format, createLogger, transports } from 'winston';
 
-const logFormat = winston.format.printf(info => {
+const logFormat = format.printf(info => {
     const date = new Date().toISOString();
     return `${date}-${info.level}: ${JSON.stringify(info.message, null, 4)}`;
 });
 
-const logger = winston.createLogger({
+const logger = createLogger({
     level: 'debug',
-    format: winston.format.json(),
+    format: format.json(),
     transports: [
-        new winston.transports.Console({
-            format: winston.format.combine(winston.format.colorize(), logFormat),
+        new transports.Console({
+            format: format.combine(format.colorize(), logFormat),
         }),
     ],
 });

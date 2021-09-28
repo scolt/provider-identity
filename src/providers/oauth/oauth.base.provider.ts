@@ -1,6 +1,6 @@
+import requestPromise, { RequestPromiseOptions } from 'request-promise';
 import { AuthProviderConfig, BaseUserDetails, TokenData } from '../base.interface';
 
-import requestPromise, { RequestPromiseOptions } from 'request-promise';
 import { config } from '../../config';
 import { DEFAULT_AGENT, generateQueryParamsByObj } from '../../utils/url';
 

@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import { config as dotenv } from 'dotenv';
 dotenv();
 
+import { urlencoded, json } from 'body-parser';
 import { config } from './config';
 
 import { Database } from './database/database';
@@ -19,15 +20,14 @@ import { initializeMainRouter } from './routes/main.route';
 import { UserService } from './services/user.service';
 import { AuthService } from './services/auth.service';
 import logger from './utils/logger';
-import bodyParser from 'body-parser';
 import { Adapter } from './models/adapter.model';
 
 const userService = new UserService();
 const authService = new AuthService();
 
 function estabilishMiddlewares(app: Express) {
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
+    app.use(urlencoded({ extended: true }));
+    app.use(json());
     app.use(cookieParser());
 }
 

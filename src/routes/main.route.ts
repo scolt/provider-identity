@@ -1,6 +1,6 @@
+import path from 'path';
 import { Router, Request, Response } from 'express';
 import serveStatic from 'serve-static';
-import path from 'path';
 
 import { config } from '../config';
 

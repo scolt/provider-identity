@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { Router, Request, Response } from 'express';
 import serveStatic from 'serve-static';
-import * as path from 'path';
 
 import { config } from '../config';
 import { Adapter } from '../models/adapter.model';

@@ -1,9 +1,9 @@
-import { DateTime } from 'luxon';
 import * as crypto from 'crypto';
+import { DateTime } from 'luxon';
 
+import { SignOptions, sign, verify } from 'jsonwebtoken';
 import { BaseUserDetails, TokenPayloadData } from '../providers/base.interface';
 
-import jsonwebtoken, { SignOptions } from 'jsonwebtoken';
 import logger from '../utils/logger';
 import { config } from '../config';
 import { UserToken } from '../models/token.model';
@@ -75,8 +75,8 @@ export class AuthService {
         const refreshPayload = { id: payload.id };
         const refreshOptions = { ...options, expiresIn: refreshTokenExpiresIn };
 
-        const accessToken = jsonwebtoken.sign(payload, config.privateKey, options);
-        const refreshToken = jsonwebtoken.sign(refreshPayload, config.privateKey, refreshOptions);
+        const accessToken = sign(payload, config.privateKey, options);
+        const refreshToken = sign(refreshPayload, config.privateKey, refreshOptions);
 
         await UserToken.destroy({ where: { userId: payload.id } });
         await UserToken.create({
@@ -104,7 +104,7 @@ export class AuthService {
         const tokenCondition = { where: { token } };
         const userToken = await UserToken.findOne(tokenCondition);
         if (!userToken) {
-            const { id } = jsonwebtoken.verify(token, config.publicKey, { algorithms: ['RS256'] }) as TokenPayloadData;
+            const { id } = verify(token, config.publicKey, { algorithms: ['RS256'] }) as TokenPayloadData;
             throw new Error(`Refresh token is invalid: ${token}. For user ${id}`);
         }
 
