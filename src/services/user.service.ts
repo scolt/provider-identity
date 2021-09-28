@@ -1,8 +1,9 @@
 import { BaseUserDetails } from '../providers/base.interface';
 import { User } from '../models/user.model';
-import { UserAdapter } from '../models/adapter.model';
+import { UserAdapter } from '../models/user.adapter.model';
 import { UserNetwork } from '../models/network.model';
 import logger from '../utils/logger';
+import { Adapter } from '../models/adapter.model';
 
 export interface ValidationMap {
     [key: string]: string;
@@ -14,17 +15,14 @@ export interface RegisteredUserData {
 }
 
 export class UserService {
-    async tryIdentifyAndUpdateUser(
-        user: BaseUserDetails,
-        adapterId: string,
-    ): Promise<BaseUserDetails> {
+    async tryIdentifyAndUpdateUser(user: BaseUserDetails, adapterName: string): Promise<BaseUserDetails> {
         const userExistedByEmail = await User.findOne({
             where: {
                 email: user.email,
             },
         });
 
-        let userId = null;
+        let userId: string;
         if (userExistedByEmail) {
             userId = userExistedByEmail.id;
             await userExistedByEmail.update({ lastLoggedInDate: new Date() });
@@ -39,12 +37,12 @@ export class UserService {
             });
 
             userId = newUser.id;
-            logger.info(
-                `User for ${adapterId} has been created. ${user.firstName} ${user.lastName}`,
-            );
+            logger.info(`User for ${adapterName} has been created. ${user.firstName} ${user.lastName}`);
         }
 
-        if (adapterId) {
+        if (adapterName) {
+            const { adapterId } = (await Adapter.findOne({ where: { adapterName } })) || {};
+
             await UserAdapter.upsert({
                 userId,
                 adapterId,

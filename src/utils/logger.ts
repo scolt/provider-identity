@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-const logFormat = winston.format.printf((info) => {
+const logFormat = winston.format.printf(info => {
     const date = new Date().toISOString();
     return `${date}-${info.level}: ${JSON.stringify(info.message, null, 4)}`;
 });

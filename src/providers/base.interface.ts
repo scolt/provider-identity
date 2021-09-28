@@ -31,7 +31,7 @@ export interface AuthProviderConfig {
 
 export interface TokenData {
     access_token: string;
-    [key: string]: any;
+    [key: string]: string | number | undefined;
 }
 
 export interface TokenPayloadData {

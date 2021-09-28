@@ -1,5 +1,5 @@
 import { OauthBaseProvider } from './oauth.base.provider';
-import { BaseUserDetails } from '../base.interface';
+import { BaseUserDetails, TokenData } from '../base.interface';
 
 export class OauthVkProvider extends OauthBaseProvider {
     static key = 'vk';
@@ -8,7 +8,7 @@ export class OauthVkProvider extends OauthBaseProvider {
     apiUrl = 'https://api.vk.com/method';
     scope = 'email';
 
-    getOriginalUrl() {
+    getOriginalUrl(): string {
         return `${super.getOriginalUrl()}&v=5.131`;
     }
 
@@ -16,13 +16,13 @@ export class OauthVkProvider extends OauthBaseProvider {
         return `${this.apiUrl}/users.get?&access_token=${token}&v=5.131`;
     }
 
-    async processUserData(userData: string, tokenData: any): Promise<BaseUserDetails> {
+    async processUserData(userData: string, tokenData: TokenData): Promise<BaseUserDetails> {
         const data = JSON.parse(userData).response[0];
         return {
             id: data['id'],
             firstName: data['first_name'],
             lastName: data['last_name'],
-            email: tokenData['email'],
+            email: tokenData['email'] as string,
             socialNetworkKey: OauthVkProvider.key,
         };
     }

@@ -8,12 +8,20 @@ import logger from '../utils/logger';
 import { config } from '../config';
 import { UserToken } from '../models/token.model';
 import { User } from '../models/user.model';
+import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '../utils/date';
 
 export interface AuthCodeMap {
     [key: string]: {
-        user: BaseUserDetails,
-        expireUnixDate: number,
+        user: BaseUserDetails;
+        expireUnixDate: number;
     };
+}
+
+export interface TokensSet {
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpiresIn: number;
+    refreshTokenExpiresIn: number;
 }
 
 export class AuthService {
@@ -23,9 +31,9 @@ export class AuthService {
         setInterval(() => this.clearExpiredCodes(), 5 * 60 * 1000);
     }
 
-    clearExpiredCodes() {
+    clearExpiredCodes(): void {
         for (const codeKey in this.codes) {
-            if (this.codes.hasOwnProperty(codeKey)) {
+            if (Object.prototype.hasOwnProperty.call(this.codes, codeKey)) {
                 const isExpired = this.codes[codeKey].expireUnixDate < Date.now();
                 if (isExpired) {
                     delete this.codes[codeKey];
@@ -46,13 +54,11 @@ export class AuthService {
         return code;
     }
 
-    async initializeTokensByDetails(userDetails: BaseUserDetails) {
-        const accessTokenExpiresIn = 3 * 60 * 60;
-        const refreshTokenExpiresIn = 365 * 24 * 60 * 60;
+    async initializeTokensByDetails(userDetails: BaseUserDetails): Promise<TokensSet> {
+        const accessTokenExpiresIn = 3 * HOUR_IN_SECONDS;
+        const refreshTokenExpiresIn = 365 * DAY_IN_SECONDS;
 
-        const refreshExpiresDate = DateTime.now()
-            .plus({ seconds: refreshTokenExpiresIn })
-            .toJSDate();
+        const refreshExpiresDate = DateTime.now().plus({ seconds: refreshTokenExpiresIn }).toJSDate();
 
         const payload = {
             id: userDetails.id,
@@ -79,10 +85,10 @@ export class AuthService {
             expiresDate: refreshExpiresDate,
         });
 
-        return { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn  };
+        return { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn };
     }
 
-    async initializeTokensByCode(code: string) {
+    async initializeTokensByCode(code: string): Promise<TokensSet> {
         const userDetails = this.codes[code];
 
         if (!userDetails) {
@@ -94,14 +100,11 @@ export class AuthService {
         return this.initializeTokensByDetails(userDetails.user);
     }
 
-    async refreshToken(token: string) {
+    async refreshToken(token: string): Promise<TokensSet> {
         const tokenCondition = { where: { token } };
         const userToken = await UserToken.findOne(tokenCondition);
         if (!userToken) {
-            const { id } = jsonwebtoken.verify(
-                token, config.publicKey,
-                { algorithms: ['RS256'] },
-            ) as TokenPayloadData;
+            const { id } = jsonwebtoken.verify(token, config.publicKey, { algorithms: ['RS256'] }) as TokenPayloadData;
             throw new Error(`Refresh token is invalid: ${token}. For user ${id}`);
         }
 

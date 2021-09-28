@@ -10,7 +10,7 @@ export class Database {
 
     constructor(protected config: DatabaseConnectConfig) {}
 
-    connect() {
+    connect(): void {
         this.db = new Sequelize(this.config.connectionUrl);
     }
 

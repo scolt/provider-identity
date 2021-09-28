@@ -1,6 +1,6 @@
 import { OauthBaseProvider } from './oauth.base.provider';
-import { BaseUserDetails } from '../base.interface';
-import requestPromise from 'request-promise';
+import { BaseUserDetails, TokenData } from '../base.interface';
+import requestPromise, { RequestPromiseOptions } from 'request-promise';
 
 export class OauthGithubProvider extends OauthBaseProvider {
     static key = 'github';
@@ -9,28 +9,28 @@ export class OauthGithubProvider extends OauthBaseProvider {
     apiUrl = 'https://api.github.com';
     scope = 'user:email user';
 
-    getRequestOptions(value: string): requestPromise.RequestPromiseOptions {
+    getCustomRequestOptions = (token: string): RequestPromiseOptions => {
         return {
-            ...this.requestOptions,
+            ...this.defaultRequestOptions,
             headers: {
-                ...this.requestOptions.headers,
-                Authorization: `token ${value}`,
+                ...this.defaultRequestOptions.headers,
+                Authorization: `token ${token}`,
             },
         };
-    }
+    };
 
     getApiRequestUrl(token: string): string {
         return `${this.apiUrl}/user?&access_token=${token}`;
     }
 
-    getApiEmailRequestUrl(token: string) {
+    getApiEmailRequestUrl(token: string): string {
         return `${this.apiUrl}/user/emails?&access_token=${token}`;
     }
 
-    async processUserData(userData: string, tokenData: any): Promise<BaseUserDetails> {
+    async processUserData(userData: string, tokenData: TokenData): Promise<BaseUserDetails> {
         const emailsResponse = await requestPromise.get(
             this.getApiEmailRequestUrl(tokenData.access_token),
-            this.getRequestOptions(tokenData.access_token),
+            this.getCustomRequestOptions(tokenData.access_token),
         );
         const emails = JSON.parse(emailsResponse);
         const data = JSON.parse(userData);

@@ -1,14 +1,14 @@
 import { OauthBaseProvider } from './oauth.base.provider';
-import { AuthProviderConfig, BaseUserDetails } from '../base.interface';
+import { BaseUserDetails } from '../base.interface';
 
-export class OauthFacebookProvider extends OauthBaseProvider{
+export class OauthFacebookProvider extends OauthBaseProvider {
     static key = 'facebook';
     baseUrl = 'https://www.facebook.com/v2.11/dialog/oauth';
     tokenUrl = 'https://graph.facebook.com/v2.11/oauth/access_token';
     apiUrl = 'https://graph.facebook.com/v2.11';
     scope = 'email';
 
-    getOriginalUrl() {
+    getOriginalUrl(): string {
         return `${super.getOriginalUrl()}&state=empty&v=5.64`;
     }
 

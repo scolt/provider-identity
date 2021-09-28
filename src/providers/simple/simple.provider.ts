@@ -22,9 +22,11 @@ export class AuthSimpleProvider {
     constructor(private mailService: EmailService) {}
 
     async getUserDetailsByCredentials(signInData: SignInData): Promise<BaseUserDetails> {
-        const user = await User.findOne({where: {
-            email: signInData.email,
-        }});
+        const user = await User.findOne({
+            where: {
+                email: signInData.email,
+            },
+        });
 
         if (!user) {
             logger.info(`${signInData.email} does not exist.`);
@@ -63,9 +65,7 @@ export class AuthSimpleProvider {
                 include: [UserNetwork],
             });
             if (userExistByEmail) {
-                const networks = userExistByEmail?.networks
-                    .map(network => network.networkName)
-                    .join();
+                const networks = userExistByEmail?.networks.map(network => network.networkName).join();
 
                 errors.email = `This email is already in use in registration by ${networks}`;
             }
@@ -74,7 +74,7 @@ export class AuthSimpleProvider {
         return errors;
     }
 
-    async validateCodeAndReturnConfig(code: string) {
+    async validateCodeAndReturnConfig(code: string): Promise<ConfirmationCodeObject> {
         const config = this.confirmationCodes[code];
         if (config) {
             clearTimeout(this.confirmationCodes[code].timer);

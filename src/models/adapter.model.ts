@@ -1,20 +1,20 @@
-import { Table, Column, Model, DataType, IsUUID, PrimaryKey, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { User } from './user.model';
+import { Table, Column, Model, DataType, PrimaryKey } from 'sequelize-typescript';
 
 @Table({
     timestamps: true,
-    tableName: 'users_adapters',
+    tableName: 'adapters',
 })
-export class UserAdapter extends Model {
+export class Adapter extends Model {
     @PrimaryKey
-    @ForeignKey(() => User)
     @Column(DataType.UUID)
-    userId: string;
-
-    @PrimaryKey
-    @Column(DataType.STRING)
     adapterId: string;
 
-    @BelongsTo(() => User)
-    user: User;
+    @Column(DataType.STRING)
+    adapterSecret: string;
+
+    @Column(DataType.STRING)
+    redirectUrls: string;
+
+    @Column(DataType.STRING)
+    adapterName: string;
 }

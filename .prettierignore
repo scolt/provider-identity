@@ -1,0 +1,9 @@
+# Ignore artifacts:
+dist
+views
+keys
+
+# Ignore all HTML files:
+*.html
+*.css
+*.json

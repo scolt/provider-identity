@@ -13,7 +13,7 @@ import {
 import { UserNetwork } from './network.model';
 import crypto from 'crypto';
 import { config } from '../config';
-import { UserAdapter } from './adapter.model';
+import { UserAdapter } from './user.adapter.model';
 
 @Table({
     timestamps: true,
@@ -55,18 +55,15 @@ export class User extends Model {
     active: boolean;
 
     @BeforeCreate
-    static beforeCreateHook(instance: any, options: any): void {
+    static beforeCreateHook(instance: User): void {
         if (instance.password) {
             instance.salt = crypto.randomBytes(256).toString('hex').substr(0, 16);
             instance.password = User.encryptPasswordWithSalt(instance.password, instance.salt);
         }
     }
 
-    static encryptPasswordWithSalt(password: string, salt: string) {
-        const key = crypto.createHash('sha256')
-            .update(config.passwordSecret)
-            .digest('base64')
-            .substr(0, 32);
+    static encryptPasswordWithSalt(password: string, salt: string): string {
+        const key = crypto.createHash('sha256').update(config.passwordSecret).digest('base64').substr(0, 32);
 
         const cipher = crypto.createCipheriv('aes-256-ctr', key, salt);
         let crypted = cipher.update(password + salt, 'utf8', 'hex');
@@ -74,7 +71,7 @@ export class User extends Model {
         return crypted;
     }
 
-    static isPasswordValid(instance: any, password: string): boolean {
+    static isPasswordValid(instance: User, password: string): boolean {
         return User.encryptPasswordWithSalt(password, instance.salt) === instance.password;
     }
 }

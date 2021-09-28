@@ -8,7 +8,7 @@ import { config } from './config';
 import { Database } from './database/database';
 import { User } from './models/user.model';
 import { UserNetwork } from './models/network.model';
-import { UserAdapter } from './models/adapter.model';
+import { UserAdapter } from './models/user.adapter.model';
 import { UserToken } from './models/token.model';
 
 import { initializeViewsRouter } from './routes/view.route';
@@ -20,6 +20,7 @@ import { UserService } from './services/user.service';
 import { AuthService } from './services/auth.service';
 import logger from './utils/logger';
 import bodyParser from 'body-parser';
+import { Adapter } from './models/adapter.model';
 
 const userService = new UserService();
 const authService = new AuthService();
@@ -35,7 +36,7 @@ function establishViewEngine(app: Express) {
     app.set('view engine', 'pug');
 }
 
-function establishRoutes(app: Express) {
+async function establishRoutes(app: Express) {
     const routes = [
         initializeAuthOAuthRouter.bind(null, userService, authService),
         initializeAuthSimpleRouter.bind(null, userService, authService),
@@ -43,9 +44,10 @@ function establishRoutes(app: Express) {
         initializeViewsRouter,
         initializeMainRouter,
     ];
-    routes.map((initializeRoute) => {
-        app.use(config.pathname, initializeRoute());
-    });
+
+    for (const initializeRoute of routes) {
+        app.use(config.pathname, await initializeRoute());
+    }
 }
 
 async function establishDatabase() {
@@ -56,16 +58,10 @@ async function establishDatabase() {
     db.connect();
     logger.info(`Database connection established via ${config.databaseUrl}`);
     try {
-        await db.initModels([
-            User,
-            UserNetwork,
-            UserAdapter,
-            UserToken,
-        ]);
+        await db.initModels([Adapter, User, UserNetwork, UserAdapter, UserToken]);
     } catch (e) {
         logger.error('Error while sync database and models', e);
     }
-
 }
 
 async function startApplication() {
@@ -74,7 +70,7 @@ async function startApplication() {
     await establishDatabase();
     estabilishMiddlewares(app);
     establishViewEngine(app);
-    establishRoutes(app);
+    await establishRoutes(app);
 
     app.listen(config.port, () => {
         const splitDomain = config.domain.split(':');

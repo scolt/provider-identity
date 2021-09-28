@@ -1,15 +1,12 @@
 import { Router } from 'express';
 import logger from '../utils/logger';
-import { UserService } from '../services/user.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService, TokensSet } from '../services/auth.service';
 
 export enum GrantType {
     Refresh = 'refresh_token',
 }
 
-export function initializeAuthTokensRouter(
-    authService: AuthService,
-) {
+export function initializeAuthTokensRouter(authService: AuthService): Router {
     const router = Router();
 
     router.get('/cc', async (req, res) => {
@@ -26,7 +23,7 @@ export function initializeAuthTokensRouter(
     router.post('/token', async (req, res) => {
         try {
             const { grant_type, refresh_token, code } = req.query;
-            let tokens = {};
+            let tokens: TokensSet;
             if (grant_type === GrantType.Refresh) {
                 tokens = await authService.refreshToken(refresh_token as string);
             } else {

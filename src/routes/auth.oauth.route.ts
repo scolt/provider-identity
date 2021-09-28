@@ -6,10 +6,7 @@ import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
 import { ErrorMessages } from '../utils/errors';
 
-export function initializeAuthOAuthRouter(
-    userService: UserService,
-    authService: AuthService,
-) {
+export function initializeAuthOAuthRouter(userService: UserService, authService: AuthService): Router {
     const router = Router();
     const { pathname } = config;
 
@@ -23,8 +20,7 @@ export function initializeAuthOAuthRouter(
         }
     });
 
-    oauthProvidersConfigs.forEach((config) => {
-
+    oauthProvidersConfigs.forEach(config => {
         if (!config.key) {
             logger.error('"key" property must be provided. to "authProvidersConfigs"');
             return;
@@ -49,16 +45,13 @@ export function initializeAuthOAuthRouter(
         router.get(`/oauth/${config.key}`, (req: Request, res: Response) => {
             const adapter = req.cookies['adapter'];
             const redirectUrl = req.cookies['redirect_url'];
-            logger.debug(
-                `Attempt to initialize authorization through ${config.key} for ${adapter}.`,
-            );
+            logger.debug(`Attempt to initialize authorization through ${config.key} for ${adapter}.`);
             if (!redirectUrl) {
                 res.redirect(`${pathname}/${adapter}?error=${ErrorMessages.NO_REDIRECT_URL}`);
             } else {
                 res.cookie('network', config.key, { httpOnly: true });
                 res.redirect(`${pathname}/redirect/${config.key}`);
             }
-
         });
 
         router.get(`/${config.key}/callback`, async (req, res) => {
@@ -66,9 +59,7 @@ export function initializeAuthOAuthRouter(
             const { adapter, redirect_url } = req.cookies;
 
             if (error || !code) {
-                logger.debug(
-                    `Code receiving is failed from ${config.key} for ${adapter}. ${error}`,
-                );
+                logger.debug(`Code receiving is failed from ${config.key} for ${adapter}. ${error}`);
                 res.redirect(`${pathname}/${adapter}?error=${error}`);
                 return;
             }

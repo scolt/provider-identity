@@ -6,10 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { AuthSimpleProvider } from '../providers/simple/simple.provider';
 import { EmailService } from '../services/email.service';
 
-export function initializeAuthSimpleRouter(
-    userService: UserService,
-    authService: AuthService,
-) {
+export function initializeAuthSimpleRouter(userService: UserService, authService: AuthService): Router {
     const router = Router();
 
     const emailService = new EmailService();
@@ -41,9 +38,9 @@ export function initializeAuthSimpleRouter(
             const identityCode = authService.generateCodeByUser(userDetails);
 
             res.json({
-                status: 'success' ,
-                url: `${req.cookies.redirect_url}?code=${identityCode}` },
-            );
+                status: 'success',
+                url: `${req.cookies.redirect_url}?code=${identityCode}`,
+            });
         } catch (e) {
             logger.error('Sign in failed', e);
             res.status(400).json({ status: 'failed', error: 'Credentials are invalid.' });
@@ -53,16 +50,13 @@ export function initializeAuthSimpleRouter(
     router.post('/register', async (req, res) => {
         try {
             const config = await simple.validateCodeAndReturnConfig(req.body.code);
-            const userDetails = await userService.tryIdentifyAndUpdateUser(
-                config.details,
-                req.cookies['adapter'],
-            );
+            const userDetails = await userService.tryIdentifyAndUpdateUser(config.details, req.cookies['adapter']);
             const identityCode = authService.generateCodeByUser(userDetails);
 
             res.json({
-                status: 'success' ,
-                url: `${req.cookies.redirect_url}?code=${identityCode}` },
-            );
+                status: 'success',
+                url: `${req.cookies.redirect_url}?code=${identityCode}`,
+            });
         } catch (e) {
             logger.error('Registration failed', e);
             res.status(400).json({ status: 'failed', error: 'Code is invalid!' });

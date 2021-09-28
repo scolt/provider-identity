@@ -1,14 +1,4 @@
-import {
-    Table,
-    Column,
-    Model,
-    DataType,
-    IsUUID,
-    PrimaryKey,
-    BelongsTo,
-    ForeignKey,
-    IsDate,
-} from 'sequelize-typescript';
+import { Table, Column, Model, DataType, PrimaryKey, BelongsTo, ForeignKey, IsDate } from 'sequelize-typescript';
 import { User } from './user.model';
 
 @Table({
@@ -29,6 +19,6 @@ export class UserToken extends Model {
     @Column(DataType.DATE)
     expiresDate: Date;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, { onDelete: 'cascade' })
     user: User;
 }

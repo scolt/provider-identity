@@ -7,8 +7,8 @@
     "copy:views": "copyfiles ./src/views/**/**.* ./dist/views -a -u 2",
     "copy:packages": "copyfiles ./package.json ./dist",
     "build": "rimraf ./dist && npx typescript -v && tsc && npm run copy:views && npm run copy:packages",
-    "lint": "tslint ./src/**/*.ts",
-    "lint:fix": "tslint ./src/**/*.ts --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start:dev": "ts-node-dev ./src/app.ts"
   },
   "keywords": [
@@ -42,13 +42,17 @@
     "@types/nodemailer": "^6.4.4",
     "@types/request-promise": "^4.1.47",
     "@types/validator": "^13.1.3",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
     "copyfiles": "^2.4.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "pre-commit": "^1.2.2",
+    "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "sequelize-typescript": "^2.1.0",
     "ts-node-dev": "^1.1.8",
-    "tslint": "^5.20.1",
-    "tslint-config-airbnb": "^5.11.2",
     "typescript": "^4.2.3"
   },
   "pre-commit": [

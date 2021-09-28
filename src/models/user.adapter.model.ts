@@ -1,23 +1,25 @@
 import { Table, Column, Model, DataType, PrimaryKey, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { User } from './user.model';
+import { Adapter } from './adapter.model';
 
 @Table({
     timestamps: true,
-    tableName: 'users_networks',
+    tableName: 'users_adapters',
 })
-export class UserNetwork extends Model {
+export class UserAdapter extends Model {
+    @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataType.UUID)
     userId: string;
 
     @PrimaryKey
-    @Column(DataType.STRING)
-    networkInternalId: string;
-
-    @PrimaryKey
-    @Column(DataType.STRING)
-    networkName: string;
+    @ForeignKey(() => Adapter)
+    @Column(DataType.UUID)
+    adapterId: string;
 
     @BelongsTo(() => User, { onDelete: 'cascade' })
     user: User;
+
+    @BelongsTo(() => Adapter, { onDelete: 'cascade' })
+    adapter: Adapter;
 }
