@@ -19,6 +19,6 @@ export const config = {
 
     privateKey: env.privateKeyPath ? fs.readFileSync(path.normalize(env.privateKeyPath), 'utf8') : '',
     publicKey: env.publicKeyPath ? fs.readFileSync(path.normalize(env.publicKeyPath), 'utf8') : '',
-    tokenSecret: env.tokenSecret || 'must-be-changed with .env',
-    passwordSecret: env.passwordSecret || 'must-be-changed with .env',
+    tokenSecret: env.tokenSecret || 'must-be-changed with .env-example',
+    passwordSecret: env.passwordSecret || 'must-be-changed with .env-example',
 };
