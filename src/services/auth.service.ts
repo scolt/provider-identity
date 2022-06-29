@@ -5,10 +5,10 @@ import { SignOptions, sign, verify } from 'jsonwebtoken';
 import { BaseUserDetails, TokenPayloadData } from '../providers/base.interface';
 
 import logger from '../utils/logger';
-import { config } from '../config';
 import { UserToken } from '../models/token.model';
 import { User } from '../models/user.model';
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '../utils/date';
+import { Adapter } from '../models/adapter.model';
 
 export interface AuthCodeMap {
     [key: string]: {
@@ -54,8 +54,8 @@ export class AuthService {
         return code;
     }
 
-    async initializeTokensByDetails(userDetails: BaseUserDetails): Promise<TokensSet> {
-        const accessTokenExpiresIn = 3 * HOUR_IN_SECONDS;
+    async initializeTokensByDetails(userDetails: BaseUserDetails, adapterEncryptKey: string): Promise<TokensSet> {
+        const accessTokenExpiresIn = 24 * HOUR_IN_SECONDS;
         const refreshTokenExpiresIn = 365 * DAY_IN_SECONDS;
 
         const refreshExpiresDate = DateTime.now().plus({ seconds: refreshTokenExpiresIn }).toJSDate();
@@ -68,15 +68,14 @@ export class AuthService {
         };
 
         const options: SignOptions = {
-            algorithm: 'RS256',
             expiresIn: accessTokenExpiresIn,
         };
 
         const refreshPayload = { id: payload.id };
         const refreshOptions = { ...options, expiresIn: refreshTokenExpiresIn };
 
-        const accessToken = sign(payload, config.privateKey, options);
-        const refreshToken = sign(refreshPayload, config.privateKey, refreshOptions);
+        const accessToken = sign(payload, adapterEncryptKey, options);
+        const refreshToken = sign(refreshPayload, adapterEncryptKey, refreshOptions);
 
         await UserToken.destroy({ where: { userId: payload.id } });
         await UserToken.create({
@@ -88,8 +87,13 @@ export class AuthService {
         return { accessToken, refreshToken, accessTokenExpiresIn, refreshTokenExpiresIn };
     }
 
-    async initializeTokensByCode(code: string): Promise<TokensSet> {
+    async initializeTokensByCode(code: string, adapterName: string): Promise<TokensSet> {
         const userDetails = this.codes[code];
+        const adapter = await Adapter.findOne({ where: { adapterName } });
+
+        if (!adapter) {
+            throw new Error(`Adapter is invalid: ${adapterName}.`);
+        }
 
         if (!userDetails) {
             throw new Error('Code is not exist');
@@ -97,14 +101,20 @@ export class AuthService {
 
         delete this.codes[code];
 
-        return this.initializeTokensByDetails(userDetails.user);
+        return this.initializeTokensByDetails(userDetails.user, adapter.adapterEncryptKey);
     }
 
-    async refreshToken(token: string): Promise<TokensSet> {
+    async refreshToken(token: string, adapterName: string): Promise<TokensSet> {
         const tokenCondition = { where: { token } };
         const userToken = await UserToken.findOne(tokenCondition);
+        const adapter = await Adapter.findOne({ where: { adapterName } });
+
+        if (!adapter) {
+            throw new Error(`Adapter is invalid: ${adapterName}.`);
+        }
+
         if (!userToken) {
-            const { id } = verify(token, config.publicKey, { algorithms: ['RS256'] }) as TokenPayloadData;
+            const { id } = verify(token, adapter.adapterEncryptKey, { algorithms: ['RS256'] }) as TokenPayloadData;
             throw new Error(`Refresh token is invalid: ${token}. For user ${id}`);
         }
 
@@ -118,6 +128,6 @@ export class AuthService {
             throw new Error(`User "${userToken.userId}" is not exist anymore.`);
         }
 
-        return this.initializeTokensByDetails(user);
+        return this.initializeTokensByDetails(user, adapter.adapterEncryptKey);
     }
 }

@@ -22,12 +22,17 @@ export function initializeAuthTokensRouter(authService: AuthService): Router {
 
     router.post('/token', async (req, res) => {
         try {
-            const { grant_type, refresh_token, code } = req.query;
+            const { grant_type, refresh_token, code, adapter } = req.query;
             let tokens: TokensSet;
+
+            if (!adapter) {
+                throw new Error('Adapter is required.');
+            }
+
             if (grant_type === GrantType.Refresh) {
-                tokens = await authService.refreshToken(refresh_token as string);
+                tokens = await authService.refreshToken(refresh_token as string, adapter as string);
             } else {
-                tokens = await authService.initializeTokensByCode(code as string);
+                tokens = await authService.initializeTokensByCode(code as string, adapter as string);
             }
 
             res.json({ ...tokens, status: 'success' });

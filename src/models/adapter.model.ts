@@ -13,6 +13,9 @@ export class Adapter extends Model {
     adapterSecret: string;
 
     @Column(DataType.STRING)
+    adapterEncryptKey: string;
+
+    @Column(DataType.STRING)
     redirectUrls: string;
 
     @Column(DataType.STRING)
